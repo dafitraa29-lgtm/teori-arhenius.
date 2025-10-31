@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Coba Teori Arrhenius</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .lab-setup {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .lab-setup {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .beaker-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .beaker {
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            background: linear-gradient(to bottom, 
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.05) 100%);
+            border-radius: 0 0 40px 40px;
+            border: 8px solid rgba(255,255,255,0.3);
+            border-top: none;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 50px rgba(0,0,0,0.3),
+                0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .solution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0%;
+            background: linear-gradient(to top, 
+                rgba(173, 216, 230, 0.8) 0%,
+                rgba(135, 206, 250, 0.9) 100%);
+            transition: all 1s ease;
+            border-radius: 0 0 32px 32px;
+        }
+
+        .solution.acidic {
+            background: linear-gradient(to top, 
+                rgba(255, 100, 100, 0.8) 0%,
+                rgba(255, 50, 50, 0.9) 100%);
+        }
+
+        .solution.basic {
+            background: linear-gradient(to top, 
+                rgba(100, 150, 255, 0.8) 0%,
+                rgba(50, 100, 255, 0.9) 100%);
+        }
+
+        .controls {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-acid {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .btn-base {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(45deg, #556270, #4ecdc4);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .ph-indicator {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ph-scale {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to right, 
+                #ff0000 0%, #ff5a00 16.67%, #ff9a00 33.33%, 
+                #ffce00 50%, #e1ff00 66.67%, #a2ff00 83.33%, #00ff2a 100%);
+            border-radius: 15px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .ph-marker {
+            position: absolute;
+            top: -5px;
+            width: 10px;
+            height: 40px;
+            background: #333;
+            border-radius: 5px;
+            transform: translateX(-50%);
+            transition: left 0.5s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .molecule-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .reaction-equation {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .explanation {
+            font-size: 1.1em;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            font-weight: 700;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ============================================== */
+        /* [ CSS BARU ] GAYA ATOM 3D SIMPEL DIMULAI DI SINI */
+        /* ============================================== */
+
+        @keyframes float {
+            0%   { transform: translate(0px, 0px); }
+            25%  { transform: translate(2px, -3px); }
+            50%  { transform: translate(0px, 3px); }
+            75%  { transform: translate(-2px, -3px); }
+            100% { transform: translate(0px, 0px); }
+        }
+
+        /* Kontainer untuk partikel (ion atau molekul) */
+        .particle {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px; 
+            height: 70px;
+            z-index: 5;
+            animation: float 6s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .particle:hover {
+            z-index: 10;
+            transform: scale(1.2);
+        }
+
+        /* Bola atom 3D dasar */
+        .atom {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            position: absolute;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3), 2px 2px 6px rgba(255,255,255,0.5);
+        }
+        
+        /* Atom Hidrogen (Merah) */
+        .atom-h {
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle at 30% 30%, #ff7979, #c0392b);
+            z-index: 10;
+            font-size: 12px;
+        }
+        /* Atom Oksigen (Biru Tua) */
+        .atom-o {
+            width: 35px;
+            height: 35px;
+            background: radial-gradient(circle at 30% 30%, #4ecdc4, #2980b9);
+            z-index: 5;
+            font-size: 14px;
+        }
+        /* Atom Kation (Na+) - Kuning/Oranye */
+        .atom-na {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #ffa500);
+            font-size: 14px;
+        }
+        /* Atom Anion (Cl-) - Hijau */
+        .atom-cl {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #32cd32, #228b22);
+            font-size: 14px;
+        }
+        
+   /* Pengaturan Posisi untuk Model Molekul Simpel */
+        
+/* H+ (atom 25px di dalam kontainer 70px) */
+.h-plus .atom-h {
+    top: 22.5px;
+    left: 22.5px;
+}
+
+/* Na+ (atom 40px di dalam kontainer 70px) */
+.kation-na .atom-na {
+    top: 15px;
+    left: 15px;
+}
+        
+/* Cl- (atom 40px di dalam kontainer 70px) */
+.anion-cl .atom-cl {
+    top: 15px;
+    left: 15px;
+}
+        
+        /* OH- */
+        .oh-minus .atom-o { top: 17px; left: 7px; }
+        .oh-minus .atom-h { top: 17px; left: 35px; }
+
+        /* H2O */
+        .h2o .atom-o { top: 12px; left: 17px; }
+        .h2o .atom-h.h1 { top: 35px; left: 7px; }
+        .h2o .atom-h.h2 { top: 35px; left: 37px; }
+/* Na+ (atom 40px di dalam kontainer 70px) */
+.kation-na .atom-na {
+    top: 15px;
+    left: 15px;
+}
+
+/* Cl- (atom 40px di dalam kontainer 70px) */
+.anion-cl .atom-cl {
+    top: 15px;
+    left: 15px;
+}
+        
+        /* ============================================== */
+        /* [ CSS BARU ] GAYA ATOM 3D SIMPEL SELESAI */
+        /* ============================================== */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>UJI COBA TEORI ARRHENIUS</h1>
+            <p></p>
+        </div>
+
+        <div class="lab-setup">
+            <div class="beaker-container">
+                <h3>LABORATORIUM VIRTUAL</h3>
+                <div class="beaker">
+                    <div class="solution" id="solution"></div>
+                    <div class="molecule-display" id="moleculeContainer"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h3>KONTROL PERCOBAAN</h3>
+                <div class="control-buttons">
+                    <button class="btn btn-acid" id="btnAcid">
+                        + ASAM (HCl)
+                    </button>
+                    <button class="btn btn-base" id="btnBase">
+                        + BASA (NaOH)
+                    </button>
+                    <button class="btn btn-reset" id="btnReset">
+                        RESET PERCOBAAN
+                    </button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="countH">0</div>
+                        <div class="stat-label">ION H⁺</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="countOH">0</div>
+                        <div class="stat-label">ION OH⁻</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="countH2O">0</div>
+                        <div class="stat-label">MOLEKUL H₂O</div>
+                    </div>
+                </div>
+
+                <div class="ph-indicator">
+                    <h4>INDIKATOR pH LARUTAN</h4>
+                    <div class="ph-scale">
+                        <div class="ph-marker" id="phMarker" style="left: 50%;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>ASAM KUAT</span>
+                        <span>NETRAL</span>
+                        <span>BASA KUAT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="reaction-equation" id="reactionEquation">
+                </div>
+            <div class="explanation" id="explanation">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        class ArrheniusExperiment {
+            constructor() {
+                this.hCount = 0;
+                this.ohCount = 0;
+                this.h2oCount = 0;
+                this.isReacting = false;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.updateExplanation(); // Panggil ini saat inisialisasi
+            }
+
+            initializeElements() {
+                this.solution = document.getElementById('solution');
+                this.moleculeContainer = document.getElementById('moleculeContainer');
+                this.phMarker = document.getElementById('phMarker');
+                this.explanation = document.getElementById('explanation');
+                this.reactionEquation = document.getElementById('reactionEquation');
+                
+                // Stat elements
+                this.countH = document.getElementById('countH');
+                this.countOH = document.getElementById('countOH');
+                this.countH2O = document.getElementById('countH2O');
+            }
+
+            setupEventListeners() {
+                document.getElementById('btnAcid').addEventListener('click', () => this.addAcid());
+                document.getElementById('btnBase').addEventListener('click', () => this.addBase());
+                document.getElementById('btnReset').addEventListener('click', () => this.resetExperiment());
+            }
+
+            // [ DIUBAH ] createBackgroundMolecules dihapus karena kita tidak lagi menampilkan air di BG
+            // createBackgroundMolecules() { ... }
+
+            addAcid() {
+                if (this.isReacting) return;
+                
+                this.hCount += 2; // Anda bisa atur jumlah ini
+                this.updateStats();
+                
+                // [ DIUBAH ] Memanggil fungsi createParticle baru
+                for (let i = 0; i < 2; i++) {
+                    this.createParticle('H⁺', 'h-plus');
+                    this.createParticle('Cl⁻', 'anion-cl');
+                }
+                
+                this.updateSolution();
+                this.checkReaction();
+            }
+
+            addBase() {
+                if (this.isReacting) return;
+                
+                this.ohCount += 2; // Anda bisa atur jumlah ini
+                this.updateStats();
+
+                // [ DIUBAH ] Memanggil fungsi createParticle baru
+                for (let i = 0; i < 2; i++) {
+                    this.createParticle('Na⁺', 'kation-na');
+                    this.createParticle('OH⁻', 'oh-minus');
+                }
+                
+                this.updateSolution();
+                this.checkReaction();
+            }
+
+            // [ FUNGSI BARU ] Diambil dari v4.1 untuk membuat atom simpel
+            createParticle(text, cssClass) {
+                const particle = document.createElement('div');
+                particle.className = `particle ${cssClass}`; 
+                
+                // Membuat HTML internal untuk model atom simpel
+                switch (cssClass) {
+                    case 'h-plus':
+                        particle.innerHTML = `<div class="atom atom-h">H⁺</div>`;
+                        break;
+                    case 'oh-minus':
+                        particle.innerHTML = `
+                            <div class="atom atom-o">O</div>
+                            <div class="atom atom-h">H</div>
+                        `;
+                        break;
+                    case 'kation-na':
+                        particle.innerHTML = `<div class="atom atom-na">Na⁺</div>`;
+                        break;
+                    case 'anion-cl':
+                        particle.innerHTML = `<div class="atom atom-cl">Cl⁻</div>`;
+                        break;
+                    case 'h2o':
+                        particle.innerHTML = `
+                            <div class="atom atom-o">O</div>
+                            <div class="atom atom-h h1">H</div>
+                            <div class="atom atom-h h2">H</div>
+                        `;
+                        break;
+                }
+
+                // Posisi acak di dalam beaker (300x400) & partikel (70x70)
+                const randomX = Math.random() * (300 - 70); 
+                const randomY = Math.random() * (400 - 70);
+
+                particle.style.left = `${randomX}px`;
+                particle.style.top = `${randomY}px`;
+                particle.style.animationDelay = `${Math.random() * -6}s`; 
+
+                this.moleculeContainer.appendChild(particle);
+                return particle;
+            }
+
+            // [ FUNGSI LAMA DIHAPUS ]
+            // createAtom() ...
+            // createHydroxideMolecule() ...
+            // createWaterMolecule() ...
+            // createElectrons() ...
+            // getAtomSize() ...
+            // getAtomSymbol() ...
+            // getElectronCount() ...
+
+            checkReaction() {
+                // [ DIUBAH ] Cek class .h-plus dan .oh-minus
+                const h_ion = this.moleculeContainer.querySelector('.h-plus');
+                const oh_ion = this.moleculeContainer.querySelector('.oh-minus');
+
+                if (h_ion && oh_ion && !this.isReacting) {
+                    this.isReacting = true;
+                    this.performNeutralization(h_ion, oh_ion);
+                }
+            }
+
+            performNeutralization(h_ion, oh_ion) {
+                // Hanya lakukan satu reaksi per panggilan
+                setTimeout(() => {
+                    this.hCount--;
+                    this.ohCount--;
+                    this.h2oCount++;
+                    
+                    // Ambil posisi untuk H2O baru
+                    const ohRect = oh_ion.getBoundingClientRect();
+                    const beakerRect = this.moleculeContainer.getBoundingClientRect();
+                    const spawnX = ohRect.left - beakerRect.left;
+                    const spawnY = ohRect.top - beakerRect.top;
+
+                    // Hapus ion-ion
+                    h_ion.remove();
+                    oh_ion.remove();
+                    
+                    // Buat H2O
+                    const newWater = this.createParticle('H₂O', 'h2o');
+                    newWater.style.left = `${spawnX}px`;
+                    newWater.style.top = `${spawnY}px`;
+                    
+                    this.updateStats();
+                    this.updateSolution();
+                    
+                    this.isReacting = false;
+                    this.checkReaction(); // Cek lagi jika masih ada
+                }, 500); // Jeda reaksi
+            }
+
+            updateStats() {
+                // [ DIUBAH ] Menggunakan class selector yang baru
+                this.countH.textContent = document.querySelectorAll('.h-plus').length;
+                this.countOH.textContent = document.querySelectorAll('.oh-minus').length;
+                this.countH2O.textContent = document.querySelectorAll('.h2o').length;
+                
+                // Perbarui jumlah H dan OH internal
+                this.hCount = parseInt(this.countH.textContent);
+                this.ohCount = parseInt(this.countOH.textContent);
+                this.h2oCount = parseInt(this.countH2O.textContent);
+                
+                this.updateExplanation();
+            }
+
+            updateSolution() {
+                const totalIons = this.hCount + this.ohCount;
+                const solutionHeight = Math.min(80, 20 + totalIons * 5);
+                
+                this.solution.style.height = `${solutionHeight}%`;
+                
+                this.solution.className = 'solution';
+                if (this.hCount > this.ohCount) {
+                    this.solution.classList.add('acidic');
+                } else if (this.ohCount > this.hCount) {
+                    this.solution.classList.add('basic');
+                }
+                
+                const phPosition = this.calculatePhPosition();
+                this.phMarker.style.left = `${phPosition}%`;
+            }
+
+            calculatePhPosition() {
+                if (this.hCount === 0 && this.ohCount === 0) return 50; 
+                
+                if (this.hCount > this.ohCount) {
+                    const acidStrength = Math.min(this.hCount - this.ohCount, 10);
+                    return Math.max(0, 50 - (acidStrength * 5));
+                } else if (this.ohCount > this.hCount) {
+                    const baseStrength = Math.min(this.ohCount - this.hCount, 10);
+                    return Math.min(100, 50 + (baseStrength * 5));
+                } else {
+                    return 50;
+                }
+            }
+
+            // [ DIPERBARUI ] Fungsi ini sudah benar dari versi Anda sebelumnya
+            updateExplanation() {
+                if (this.hCount > 0 && this.ohCount === 0) {
+                    this.explanation.innerHTML = 
+                        `Larutan bersifat <span class="highlight">ASAM</span>. Terdapat ${this.hCount} ion H⁺ bebas yang menyebabkan sifat asam menurut Teori Arrhenius.`;
+                    this.reactionEquation.innerHTML = 
+                        `Disosiasi Asam: <span class="highlight">HCl → H⁺ + Cl⁻</span>`;
+                        
+                } else if (this.ohCount > 0 && this.hCount === 0) {
+                    this.explanation.innerHTML = 
+                        `Larutan bersifat <span class="highlight">BASA</span>. Terdapat ${this.ohCount} ion OH⁻ bebas yang menyebabkan sifat basa menurut Teori Arrhenius.`;
+                    this.reactionEquation.innerHTML = 
+                        `Disosiasi Basa: <span class="highlight">NaOH → Na⁺ + OH⁻</span>`;
+                        
+                } else if (this.hCount > 0 && this.ohCount > 0) {
+                    this.explanation.innerHTML = 
+                        `Reaksi <span class="highlight">NETRALISASI</span> sedang berlangsung! Ion H⁺ dan OH⁻ bergabung membentuk molekul air.`;
+                    this.reactionEquation.innerHTML = 
+                        `Netralisasi: <span class="highlight">H⁺ + OH⁻ → H₂O</span>`;
+                        
+                } else if (this.h2oCount > 0) {
+                    this.explanation.innerHTML = 
+                        `Larutan <span class="highlight">NETRAL</span>. Telah terbentuk ${this.h2oCount} molekul air dari reaksi netralisasi Arrhenius.`;
+                    this.reactionEquation.innerHTML = 
+                        `Reaksi Selesai: <span class="highlight">Netral</span>`;
+                        
+                } else {
+                    this.explanation.innerHTML = 
+                        `Klik tombol <span class="highlight">ASAM</span> atau <span class="highlight">BASA</span> untuk memulai percobaan!`;
+                    this.reactionEquation.innerHTML = 
+                        `Pilih zat untuk memulai...`;
+                }
+            }
+
+            resetExperiment() {
+                this.hCount = 0;
+                this.ohCount = 0;
+                this.h2oCount = 0;
+                this.isReacting = false;
+                
+                this.updateStats();
+                this.updateSolution();
+                
+                // [ DIUBAH ] Menghapus .particle (kelas 3D simpel yang baru)
+                const molecules = this.moleculeContainer.querySelectorAll('.particle');
+                molecules.forEach(mol => {
+                    mol.remove();
+                });
+                
+                this.updateExplanation();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new ArrheniusExperiment();
+        });
+    </script>
+</body>
+</html>
