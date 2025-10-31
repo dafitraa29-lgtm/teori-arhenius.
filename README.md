@@ -1,0 +1,2 @@
+# teori-arhenius.
+bahan ajar
